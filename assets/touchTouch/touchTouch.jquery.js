@@ -114,10 +114,14 @@
 		// Listen for arrow keys
 		$(window).bind('keydown', function(e){
 		
-			if (e.keyCode == 37){
+			if (e.keyCode == 27){
+				e.preventDefault();
+				hideOverlay();
+			}
+			if (e.keyCode == 37 || e.keyCode == 8){
 				showPrevious();
 			}
-			else if (e.keyCode==39){
+			else if (e.keyCode==39 || e.keyCode == 13 || e.keyCode == 32){
 				showNext();
 			}
 	
