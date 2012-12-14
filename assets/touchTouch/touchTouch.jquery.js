@@ -12,6 +12,7 @@
 	
 	var overlay = $('<div id="galleryOverlay">'),
 		slider = $('<div id="gallerySlider">'),
+		imageTitle = $('<div id="imageTitle"></div>'),
 		prevArrow = $('<a id="prevArrow"></a>'),
 		nextArrow = $('<a id="nextArrow"></a>'),
 		overlayVisible = false;
@@ -28,6 +29,7 @@
 		// Appending the markup to the page
 		overlay.hide().appendTo('body');
 		slider.appendTo(overlay);
+		imageTitle.appendTo(overlay);
 		
 		// Creating a placeholder for each image
 		items.each(function(){
@@ -161,6 +163,8 @@
 		function offsetSlider(index){
 			// This will trigger a smooth css transition
 			slider.css('left',(-index*100)+'%');
+			var newTitle = items.eq(index).attr("title");
+			imageTitle.html(newTitle);
 		}
 	
 		// Preload an image by its index in the items array
