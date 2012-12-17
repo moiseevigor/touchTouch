@@ -12,7 +12,7 @@
 	
 	var overlay = $('<div id="galleryOverlay">'),
 		slider = $('<div id="gallerySlider">'),
-		imageTitle = $('<div id="imageTitle"></div>'),
+		imageTitle = $('<div id="imageTitle">'),
 		prevArrow = $('<a id="prevArrow"></a>'),
 		nextArrow = $('<a id="nextArrow"></a>'),
 		overlayVisible = false;
@@ -167,6 +167,8 @@
 		function offsetSlider(index){
 			// This will trigger a smooth css transition
 			slider.css('left',(-index*100)+'%');
+
+			// Set title of the slide
 			var newTitle = items.eq(index).attr("title");
 			imageTitle.html(newTitle);
 		}
