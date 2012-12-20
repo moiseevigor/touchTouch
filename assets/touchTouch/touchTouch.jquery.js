@@ -157,27 +157,28 @@
 				showNext();
 			});
 		}
-		
-		// Listen for arrow keys
-		$(window).bind('keydown', function(e){
-		
-			if (e.keyCode == 27){
-				e.preventDefault();
-				hideOverlay();
-			}
-			if (e.keyCode == 37 || e.keyCode == 8){
-				showPrevious();
-			}
-			else if (e.keyCode==39 || e.keyCode == 13 || e.keyCode == 32){
-				showNext();
-			}
 	
-		});
-		
-		
 		/* Private functions */
 		
-	
+        function bind_keydown() {
+            // Listen for arrow keys
+            $(window).bind('keydown.touchTouch', function(e){
+            
+                if (e.keyCode == 27){
+                    e.preventDefault();
+                    hideOverlay();
+                }
+                if (e.keyCode == 37){
+                    showPrevious();
+                }
+                else if (e.keyCode==39){
+                    showNext();
+                }
+        
+            });
+        }
+        bind_keydown();
+		
 		function showOverlay(index){
 			// If the overlay is already shown, exit
 			if (overlayVisible){
@@ -222,9 +223,54 @@
 			// This will trigger a smooth css transition
 			slider.css('left',(-index*100)+'%');
 
-			// Set title of the slide
-			var newTitle = items.eq(index).attr("title");
-			imageTitle.html(newTitle);
+            var data = $(items.eq(index)).data();
+            imageTitle.html([
+                '<form id="socialdata-comments-form">',
+                    '<input name="id_socialdata" data-bind="id_socialdata" type="hidden" value="', data.idSocialdata, '" />',
+                    '<textarea name="title" data-bind="title" rows="4" cols="30">', data.title, '</textarea>',
+                    '<input type="submit" value="Save" />',
+                '</form>'
+            ].join(''));
+
+            $("#socialdata-comments-form > textarea").focus().bind('keydown', function(e) {
+                if (e.keyCode == 27 || e.keyCode == 37 || e.keyCode == 39 || e.keyCode == 13){
+                    e.preventDefault();
+                    return true;
+                }
+                $(window).unbind('keydown.touchTouch');
+
+                // Listen for arrow keys
+                $(window).bind('keydown.touchForm', function(e){
+                    if (e.keyCode == 27){
+                        e.preventDefault();
+                    }
+                    if (e.keyCode == 37){
+                        e.preventDefault();
+                    }
+                    else if (e.keyCode==39){
+                        e.preventDefault();
+                    }
+                    else if (e.keyCode==13){
+                        e.preventDefault();
+                        $('#socialdata-comments-form').submit();
+                    }
+            
+                });
+            });
+
+            $('#socialdata-comments-form').submit(function() {
+                $.post("/php/save_socialdata_comments.php", $(this).serialize(), function(d) {
+                    if(d.status === 'ok') {
+                        items.eq(index).attr("title", data.title);
+                        setTimeout(function(){ 
+                            $(window).unbind('keydown.touchForm');
+				            showNext();
+                            bind_keydown();
+                        }, 2000 );
+                    }
+                }, 'json');
+                return false;
+            });
 		}
 	
 		// Preload an image by its index in the items array
