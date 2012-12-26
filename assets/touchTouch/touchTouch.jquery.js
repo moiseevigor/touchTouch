@@ -225,9 +225,9 @@
 
             var data = $(items.eq(index)).data();
             imageTitle.html([
-                '<form id="socialdata-comments-form">',
+                '<form id="socialdata-comments-form" action="" onsubmit="return false">',
                     '<input name="id_socialdata" data-bind="id_socialdata" type="hidden" value="', data.idSocialdata, '" />',
-                    '<textarea name="title" data-bind="title" rows="4" cols="30">', data.title, '</textarea>',
+                    '<textarea name="title" data-bind="title" rows="6" cols="30">', data.title, '</textarea>',
                     '<input type="submit" value="Save" />',
                 '</form>'
             ].join(''));
@@ -253,15 +253,22 @@
                     else if (e.keyCode==13){
                         e.preventDefault();
                         $('#socialdata-comments-form').submit();
+                        $('#socialdata-comments-form input[type="submit"]').attr('disabled', "true");
                     }
             
                 });
             });
 
-            $('#socialdata-comments-form').submit(function() {
+            $('#socialdata-comments-form').one("submit", function(e) {
+            	e.preventDefault(); 
+
                 $.post("/php/save_socialdata_comments.php", $(this).serialize(), function(d) {
                     if(d.status === 'ok') {
-                        items.eq(index).attr("title", data.title);
+                    	var title = $("#socialdata-comments-form > textarea").val();
+
+                        items.eq(index).attr("title", title);
+                        items.eq(index).data("title", title);
+
                         setTimeout(function(){ 
                             $(window).unbind('keydown.touchForm');
 				            showNext();
@@ -269,6 +276,7 @@
                         }, 2000 );
                     }
                 }, 'json');
+
                 return false;
             });
 		}
